@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ROUTES } from './constants';
 import NotFound from './pages/NotFound';
 import DashboardLayout from './layouts/dashboardLayout';
+import RBGC from './components/RBGC';
 
 const AppRoutes = [
   {
@@ -18,9 +19,9 @@ const AppRoutes = [
     /* Protected Dashboard Routes */
     path: ROUTES.DASHBOARD,
     element: (
-      <ProtectedRoute>
+      <RBGC features={[]} showBackButton={true} redirectionLocation={ROUTES.LOGIN}>
         <DashboardLayout />
-      </ProtectedRoute>
+      </RBGC>
     ),
     children: [
       {
