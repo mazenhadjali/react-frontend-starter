@@ -1,12 +1,12 @@
 import { Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import DashboardLayout from './layouts/DashboardLayout';
 import HomeDashboard from './pages/HomeDashboard';
 import Users from './pages/Users';
 import Roles from './pages/Roles';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ROUTES } from './constants';
 import NotFound from './pages/NotFound';
+import DashboardLayout from './layouts/dashboardLayout';
 
 const AppRoutes = [
   {
