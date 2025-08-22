@@ -29,57 +29,40 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-secondary-50 to-accent-50 p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-large w-full max-w-md border border-secondary-100">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-primary-600 to-accent-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-medium">
-            <span className="text-2xl font-bold text-white">A</span>
-          </div>
-          <h2 className="text-3xl font-bold text-secondary-800 mb-2">
-            Welcome Back
-          </h2>
-          <p className="text-secondary-500">Sign in to your account</p>
+    <section className="bg-muted h-screen">
+      <div className="flex h-full items-center justify-center">
+        {/* Logo */}
+        <div className="flex flex-col items-center gap-6 lg:justify-start">
+          <h1 className="text-xl font-bold text-gray-900">
+            BUISINESS NAME | LOGO
+          </h1>
+          <form onSubmit={handleSubmit} className="min-w-sm border-muted bg-background flex w-full max-w-sm flex-col items-center gap-y-4 rounded-md border px-6 py-8 shadow-md">
+            <h1 className="text-xl font-semibold">
+              Welcome Back !
+            </h1>
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="text-sm"
+              required
+              onChange={handleChange}
+            />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              className="text-sm"
+              required
+              onChange={handleChange}
+            />
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Input label="Email Address" type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
-          <Input label="password" type="password" id="password" name="password" value={formData.password} onChange={handleChange} required />
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-secondary-600">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
-          <Button size='medium' variant='primary' type='submit' className='w-full transform hover:-translate-y-0.5'>
-            Sign In
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-secondary-600">
-            Don't have an account?{' '}
-            <Link to="#" className="font-medium text-primary-600 hover:text-primary-500">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </div >
-    </div >
+      </div>
+    </section>
   );
 };
 

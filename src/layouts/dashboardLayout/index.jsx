@@ -1,23 +1,21 @@
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import AppSidebar from './Sidebar';
 import Header from './Header';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 
 
 const DashboardLayout = () => {
     return (
-        <div className="flex h-screen bg-gradient-to-br from-secondary-50 via-primary-50/30 to-accent-50/50">
-            <Sidebar />
-
-            <div className="flex-1 flex flex-col overflow-hidden">
+        <SidebarProvider>
+            <AppSidebar />
+            <main className="flex-1 min-h-screen bg-background">
                 <Header />
+                <div className="p-1 md:p-6 lg:p-8">
+                    <Outlet />
+                </div>
 
-                <main className="flex-1 overflow-y-auto p-6 animate-fade-in">
-                    <div className="max-w-7xl mx-auto">
-                        <Outlet />
-                    </div>
-                </main>
-            </div>
-        </div>
+            </main>
+        </SidebarProvider>
     );
 };
 

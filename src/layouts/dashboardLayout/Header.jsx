@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES, AUTH_STORAGE_KEY } from '../../constants';
 import { Button } from '@/components/ui/button';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -12,12 +13,16 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-soft border-b border-secondary-200 px-6 py-4">
+
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-secondary-800">
-            Dashboard
-          </h1>
-          <p className="text-sm text-secondary-500 mt-1">Welcome back to your admin panel</p>
+        <div className="flex items-center space-x-4">
+          <SidebarTrigger />
+          <div>
+            <h1 className="text-xl font-semibold text-secondary-800">
+              Dashboard
+            </h1>
+            <p className="text-sm text-secondary-500 mt-1">Welcome back to your admin panel</p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -33,8 +38,7 @@ const Header = () => {
 
           <Button
             onClick={handleLogout}
-            size='medium'
-            variant='danger'
+            variant='destructive'
           >
             Logout
           </Button>

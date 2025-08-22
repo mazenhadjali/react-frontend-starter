@@ -11,7 +11,7 @@ const Users = () => {
             <h1 className="text-3xl font-bold text-secondary-900">Users Management</h1>
             <p className="text-secondary-600 mt-2">Manage your users and their permissions</p>
           </div>
-          <Button size="medium" variant="primary">
+          <Button size="lg" variant="outline">
             Add New User
           </Button>
         </div>
