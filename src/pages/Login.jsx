@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES, AUTH_STORAGE_KEY } from '../constants';
-import Button from '../components/Button';
-import Input from '../components/Input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const Login = () => {
   const [formData, setFormData] = useState({

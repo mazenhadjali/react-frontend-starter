@@ -1,4 +1,4 @@
-import Button from '../components/Button';
+import { Button } from "@/components/ui/button";
 
 const Roles = () => {
 
@@ -11,7 +11,7 @@ const Roles = () => {
             <h1 className="text-3xl font-bold text-secondary-900">Roles Management</h1>
             <p className="text-secondary-600 mt-2">Manage roles and their permissions</p>
           </div>
-          <Button size='medium' variant='primary'>
+          <Button size="lg" variant="outline">
             Create New Role
           </Button>
         </div>

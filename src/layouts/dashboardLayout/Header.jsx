@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES, AUTH_STORAGE_KEY } from '../../constants';
-import Button from '../../components/Button';
+import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const navigate = useNavigate();
