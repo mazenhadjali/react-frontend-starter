@@ -3,9 +3,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /* Global styles */
-* {
-  transition: all 0.2s ease-in-out;
-}
+/* * {
+  transition: all 0.1s ease-in-out;
+} */
 
 /* Custom scrollbar styles */
 ::-webkit-scrollbar {

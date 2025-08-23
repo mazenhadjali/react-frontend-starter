@@ -3,22 +3,29 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES, AUTH_STORAGE_KEY } from '../constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useLogin } from '@/api/services/auth/auth.query';
 
 const Login = () => {
+
+  const login = useLogin();
+
+
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simple authentication logic - in real app, this would be API call
-    if (formData.email && formData.password) {
-      // Store authentication state (in real app, use proper auth state management)
-      localStorage.setItem(AUTH_STORAGE_KEY, 'true');
-      navigate(ROUTES.DASHBOARD);
-    }
+    login.mutate({
+      username: formData.username,
+      password: formData.password,
+    }, {
+      onSuccess: () => {
+        navigate(ROUTES.DASHBOARD);
+      }
+    });
   };
 
   const handleChange = (e) => {
@@ -41,9 +48,9 @@ const Login = () => {
               Welcome Back !
             </h1>
             <Input
-              name="email"
-              type="email"
-              placeholder="Email"
+              name="username"
+              type="text"
+              placeholder="Username"
               className="text-sm"
               required
               onChange={handleChange}
