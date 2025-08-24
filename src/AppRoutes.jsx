@@ -8,6 +8,7 @@ import { ROUTES } from './constants';
 import NotFound from './pages/NotFound';
 import DashboardLayout from './layouts/dashboardLayout';
 import RBGC from './components/RBGC';
+import DevTestPage from './pages/DevTestPage';
 
 const AppRoutes = [
   {
@@ -19,9 +20,9 @@ const AppRoutes = [
     /* Protected Dashboard Routes */
     path: ROUTES.DASHBOARD,
     element: (
-      <RBGC features={[]} showBackButton={true} redirectionLocation={ROUTES.LOGIN}>
+      <ProtectedRoute>
         <DashboardLayout />
-      </RBGC>
+      </ProtectedRoute>
     ),
     children: [
       {
@@ -29,12 +30,16 @@ const AppRoutes = [
         element: <HomeDashboard />
       },
       {
-        path: "users",
-        element: <Users />
+        path: ROUTES.USERS,
+        element: <RBGC features={['LIST_USEdRS',]}><Users /></RBGC>
       },
       {
-        path: "roles",
-        element: <Roles />
+        path: ROUTES.ROLES,
+        element: <RBGC features={['LIST_ROLES',]}><Roles /></RBGC>
+      },
+      {
+        path: ROUTES.DEV_TEST,
+        element: <DevTestPage />
       }
     ]
   },

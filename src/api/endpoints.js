@@ -9,6 +9,7 @@
 export const AuthEndpoints = {
     /** Login a user */
     login: () => "/api/auth/login",
+    me: () => "/api/auth/me"
 };
 
 /**

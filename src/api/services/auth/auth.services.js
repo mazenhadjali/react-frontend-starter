@@ -23,6 +23,11 @@ export const auth = {
         return data; // { token }
     },
 
+    async me() {
+        const { data } = await axiosClient.get(AuthEndpoints.me());
+        return data;
+    },
+
     async logout() {
         clearTokens();
     },

@@ -1,11 +1,37 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { ROUTES, AUTH_STORAGE_KEY } from '../constants';
+import { useEffect, useState } from 'react';
+import { ROUTES } from '../constants';
+import { useAuth } from '@/hooks/useAuth';
 
 const ProtectedRoute = ({ children }) => {
   const location = useLocation();
-  const isAuthenticated = localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+  const { 
+    user, 
+    isLoading, 
+    isAuthenticated, 
+    initializeAuth 
+  } = useAuth();
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  if (!isAuthenticated) {
+  useEffect(() => {
+    const initialize = async () => {
+      await initializeAuth();
+      setIsInitialized(true);
+    };
+    
+    initialize();
+  }, [initializeAuth]);
+
+  // Show loading while checking authentication
+  if (!isInitialized || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
     // Redirect to login page with return url
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
   }

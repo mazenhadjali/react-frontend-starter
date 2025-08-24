@@ -1,31 +1,37 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ROUTES, AUTH_STORAGE_KEY } from '../constants';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ROUTES } from '../constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useLogin } from '@/api/services/auth/auth.query';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const Login = () => {
-
-  const login = useLogin();
-
+  const { login, isLoading, error } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
-  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const from = location.state?.from?.pathname || ROUTES.DASHBOARD;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login.mutate({
+    
+    const result = await login({
       username: formData.username,
       password: formData.password,
-    }, {
-      onSuccess: () => {
-        navigate(ROUTES.DASHBOARD);
-      }
     });
+
+    if (result.success) {
+      toast.success("Welcome back!");
+      navigate(from, { replace: true });
+    } else {
+      toast.error(result.error || "Login failed");
+    }
   };
 
   const handleChange = (e) => {
@@ -47,13 +53,20 @@ const Login = () => {
             <h1 className="text-xl font-semibold">
               Welcome Back !
             </h1>
+            {error && (
+              <div className="w-full p-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded">
+                {error}
+              </div>
+            )}
             <Input
               name="username"
               type="text"
               placeholder="Username"
               className="text-sm"
               required
+              value={formData.username}
               onChange={handleChange}
+              disabled={isLoading}
             />
             <Input
               name="password"
@@ -61,10 +74,12 @@ const Login = () => {
               placeholder="Password"
               className="text-sm"
               required
+              value={formData.password}
               onChange={handleChange}
+              disabled={isLoading}
             />
-            <Button type="submit" className="w-full">
-              Sign In
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
         </div>

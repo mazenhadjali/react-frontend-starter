@@ -28,21 +28,24 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
-import { useLogout } from "@/api/services/auth/auth.query"
+import { useAuth } from "@/hooks/useAuth"
 import { useNavigate } from "react-router-dom"
 import { ROUTES } from "@/constants"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
-    const logout = useLogout()
+    const {
+        user,
+        logout,
+        getUserInitials,
+        getDisplayName,
+        getDisplayEmail
+    } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        logout.mutate(undefined, {
-            onSuccess: () => {
-                navigate(ROUTES.LOGIN)
-            }
-        })
+        logout();
+        navigate(ROUTES.LOGIN);
     }
 
     return (
@@ -55,12 +58,12 @@ export function NavUser() {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src="/vite.svg" alt="User Avatar" />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                <AvatarImage src={user?.avatar || "/vite.svg"} alt="User Avatar" />
+                                <AvatarFallback className="rounded-lg">{getUserInitials()}</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">User Name</span>
-                                <span className="truncate text-xs">user@example.com</span>
+                                <span className="truncate font-medium">{getDisplayName()}</span>
+                                <span className="truncate text-xs">{getDisplayEmail()}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
@@ -74,12 +77,12 @@ export function NavUser() {
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src="/vite.svg" alt="User Avatar" />
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                    <AvatarImage src={user?.avatar || "/vite.svg"} alt="User Avatar" />
+                                    <AvatarFallback className="rounded-lg">{getUserInitials()}</AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">User Name</span>
-                                    <span className="truncate text-xs">user@example.com</span>
+                                    <span className="truncate font-medium">{getDisplayName()}</span>
+                                    <span className="truncate text-xs">{getDisplayEmail()}</span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>

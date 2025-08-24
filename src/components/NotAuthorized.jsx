@@ -2,12 +2,6 @@ import React from 'react';
 import { VscError } from 'react-icons/vsc';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * NotAuthorized Component
- * 
- * A simple component that displays when a user doesn't have the required permissions
- * to access certain content or features.
- */
 const NotAuthorized = ({
     title = "Access Denied",
     message = "You don't have permission to view this content.",
