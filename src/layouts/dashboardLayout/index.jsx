@@ -13,7 +13,6 @@ const DashboardLayout = () => {
                 <div className="p-1 md:p-6 lg:p-8">
                     <Outlet />
                 </div>
-
             </main>
         </SidebarProvider>
     );
