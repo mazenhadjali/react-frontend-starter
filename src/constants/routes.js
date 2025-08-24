@@ -30,12 +30,52 @@ export const ROUTES = {
     features: ['LIST_USERS'],
     icon: FaUsers
   },
+  USER_DETAIL: {
+    path: '/dashboard/users/:id',
+    label: 'User Detail',
+    features: ['LIST_USERS']
+  },
+  ADD_USER: {
+    path: '/dashboard/users/add',
+    label: 'Add User',
+    features: ['CREATE_USER']
+  },
+  EDIT_USER: {
+    path: '/dashboard/users/:id/edit',
+    label: 'Edit User',
+    features: ['UPDATE_USER']
+  },
+  MANAGE_USER: {
+    path: '/dashboard/users/:id/manage',
+    label: 'Manage User',
+    features: ['UPDATE_USER', 'ASSIGN_ROLES']
+  },
   ROLES: {
     path: '/dashboard/roles',
     label: 'Roles',
-    features: ['LIST_ROLESd', 'LIST_ROLES'],
+    features: ['LIST_ROLES'],
     isMenuItem: true,
     icon: IoShield
+  },
+  ROLE_DETAIL: {
+    path: '/dashboard/roles/:id',
+    label: 'Role Detail',
+    features: ['LIST_ROLES']
+  },
+  ADD_ROLE: {
+    path: '/dashboard/roles/add',
+    label: 'Add Role',
+    features: ['CREATE_ROLE']
+  },
+  EDIT_ROLE: {
+    path: '/dashboard/roles/:id/edit',
+    label: 'Edit Role',
+    features: ['UPDATE_ROLE']
+  },
+  MANAGE_ROLE: {
+    path: '/dashboard/roles/:id/manage',
+    label: 'Manage Role',
+    features: ['UPDATE_ROLE', 'ASSIGN_FEATURES']
   },
   DEV_TEST: {
     path: '/dashboard/dev-test',

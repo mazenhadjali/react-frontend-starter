@@ -63,3 +63,11 @@ export const RoleEndpoints = {
     /** Remove features from a role */
     removeFeatures: (roleId) => `/api/v1/roles/${roleId}/features`,
 };
+
+/**
+ * Feature-related endpoints
+ */
+export const FeatureEndpoints = {
+    /** Get all available features */
+    getAll: () => "/api/v1/features",
+};
