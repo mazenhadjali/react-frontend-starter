@@ -1,10 +1,8 @@
 import {
-    BadgeCheck,
     Bell,
     ChevronsUpDown,
-    CreditCard,
     LogOut,
-    Sparkles,
+    User,
 } from "lucide-react"
 
 import {
@@ -89,20 +87,12 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
+                                <User />
+                                Profile
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <BadgeCheck />
-                                Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
-                            </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Bell />
                                 Notifications
@@ -110,9 +100,9 @@ export function NavUser() {
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
-                            <Button onClick={handleLogout} asChild variant="outline" className="w-full">
+                            <Button onClick={handleLogout} asChild size="sm" variant="destructive" className="w-full bg-red-600/70">
                                 <span>
-                                    <LogOut />
+                                    <LogOut className="text-white" />
                                     Log out
                                 </span>
                             </Button>
