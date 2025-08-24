@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { NAV_ITEMS, ROUTES } from '../../constants';
+import { getMenuItems } from '../../constants';
 
 import {
   Sidebar,
@@ -15,6 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { NavUser } from './nav-user';
+import RBGC from '@/components/RBGC';
 
 const AppSidebar = () => {
 
@@ -30,15 +31,17 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.path}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              {getMenuItems().map((item) => (
+                <RBGC key={item.label} features={item.features} hideFallback ignoreMe={!item?.features?.length}>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.path}>
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </RBGC>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

@@ -13,12 +13,12 @@ import DevTestPage from './pages/DevTestPage';
 const AppRoutes = [
   {
     /* Public Routes */
-    path: ROUTES.LOGIN,
+    path: ROUTES.LOGIN.path,
     element: <Login />
   },
   {
     /* Protected Dashboard Routes */
-    path: ROUTES.DASHBOARD,
+    path: ROUTES.DASHBOARD.path,
     element: (
       <ProtectedRoute>
         <DashboardLayout />
@@ -30,23 +30,23 @@ const AppRoutes = [
         element: <HomeDashboard />
       },
       {
-        path: ROUTES.USERS,
-        element: <RBGC features={['LIST_USEdRS',]}><Users /></RBGC>
+        path: ROUTES.USERS.path,
+        element: <RBGC features={ROUTES.USERS.features}><Users /></RBGC>
       },
       {
-        path: ROUTES.ROLES,
-        element: <RBGC features={['LIST_ROLES',]}><Roles /></RBGC>
+        path: ROUTES.ROLES.path,
+        element: <RBGC features={ROUTES.ROLES.features}><Roles /></RBGC>
       },
       {
-        path: ROUTES.DEV_TEST,
+        path: ROUTES.DEV_TEST.path,
         element: <DevTestPage />
       }
     ]
   },
   {
     /* Default redirect */
-    path: ROUTES.ROOT,
-    element: <Navigate to={ROUTES.DASHBOARD} replace />
+    path: ROUTES.ROOT.path,
+    element: <Navigate to={ROUTES.DASHBOARD.path} replace />
   },
   {
     /* Catch all - redirect to dashboard */
