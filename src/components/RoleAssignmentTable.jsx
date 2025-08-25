@@ -149,7 +149,7 @@ const RoleAssignmentTable = ({ userId, userRoles = [], onRoleChange }) => {
                         <div className="flex flex-wrap gap-1 max-w-xs">
                           {role.features?.slice(0, 2).map((feature, index) => (
                             <Badge key={index} variant="outline" className="text-xs">
-                              {feature.name || feature.replace(/_/g, ' ').toLowerCase()}
+                              {feature}
                             </Badge>
                           ))}
                           {role.features?.length > 2 && (

@@ -1,7 +1,5 @@
-// services/users/user.services.js
-
 import axiosClient from "@/api/axiosClient";
-import { UserEndpoints } from "../../endpoints";
+import { UserEndpoints } from "@/api/endpoints";
 
 /**
  * User management service

@@ -196,7 +196,7 @@ const AddRole = () => {
                     className="flex items-center justify-between p-2 rounded-lg border bg-gray-50"
                   >
                     <span className="text-sm text-gray-600">
-                      {feature.replace(/_/g, ' ').toLowerCase()}
+                      {feature}
                     </span>
                     <Badge variant="outline" className="text-xs">
                       Available

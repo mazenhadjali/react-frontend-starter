@@ -7,7 +7,8 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
   const { 
     user, 
-    isLoading, 
+    isLoading,
+    error,
     isAuthenticated, 
     initializeAuth 
   } = useAuth();
@@ -31,9 +32,9 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated || !user) {
+  if (!isAuthenticated || !user || error) {
     // Redirect to login page with return url
-    return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
+    return <Navigate to={ROUTES.LOGIN.path} state={{ from: location }} replace />;
   }
 
   return children;

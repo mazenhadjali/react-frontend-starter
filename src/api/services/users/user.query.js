@@ -1,5 +1,3 @@
-// services/users/user.query.js
-
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { userService } from "./user.services";

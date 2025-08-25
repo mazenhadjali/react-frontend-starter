@@ -1,40 +1,25 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useFeatures, useAddFeatures, useRemoveFeatures } from '@/api/services';
-import {
-    Plus,
-    Minus,
-    Search,
-    Code,
-    Settings,
-    Check,
-    X
-} from 'lucide-react';
+import { useFeatures, useAddFeatures, useRemoveFeatures, useRole } from '@/api/services';
+import { Search, Code, Settings, Check, X } from 'lucide-react';
 
-const FeatureAssignmentTable = ({ roleId, roleFeatures = [], onFeatureChange }) => {
+const FeatureAssignmentTable = ({ roleId }) => {
+
+    const addFeatures = useAddFeatures();
+    const removeFeatures = useRemoveFeatures();
+    const { data: roleData, isLoading: isLoadingRole } = useRole(roleId);
+
+    const [roleFeatures, setRoleFeatures] = useState(roleData?.features || []);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [assigningFeature, setAssigningFeature] = useState(null);
 
-    const { data: allFeatures = [], isLoading } = useFeatures();
-    const addFeatures = useAddFeatures();
-    const removeFeatures = useRemoveFeatures();
+    const { data: allFeatures = [], isLoading: isLoadingFeatures } = useFeatures();
+
 
     const filteredFeatures = allFeatures.filter(feature =>
         searchTerm === '' ||
@@ -42,9 +27,9 @@ const FeatureAssignmentTable = ({ roleId, roleFeatures = [], onFeatureChange }) 
     );
 
     const handleToggleFeature = async (feature) => {
-        setAssigningFeature(feature.name);
+        setAssigningFeature(feature);
         try {
-            const hasFeature = roleFeatures.includes(feature);
+            const hasFeature = roleFeatures?.includes(feature);
 
             if (hasFeature) {
                 await removeFeatures.mutateAsync({
@@ -58,10 +43,14 @@ const FeatureAssignmentTable = ({ roleId, roleFeatures = [], onFeatureChange }) 
                 });
             }
 
-            // Callback to refresh role data
-            if (onFeatureChange) {
-                onFeatureChange();
-            }
+            //  now i want to change the feature status in the table
+            setRoleFeatures((prevFeatures) => {
+                if (hasFeature) {
+                    return prevFeatures.filter((f) => f !== feature);
+                } else {
+                    return [...prevFeatures, feature];
+                }
+            });
         } catch (error) {
             console.error('Failed to toggle feature:', error);
         } finally {
@@ -69,7 +58,7 @@ const FeatureAssignmentTable = ({ roleId, roleFeatures = [], onFeatureChange }) 
         }
     };
 
-    if (isLoading) {
+    if (isLoadingRole || isLoadingFeatures) {
         return (
             <Card>
                 <CardHeader>
@@ -174,15 +163,7 @@ const FeatureAssignmentTable = ({ roleId, roleFeatures = [], onFeatureChange }) 
                                                 >
                                                     {isAssigning ? (
                                                         <Settings className="h-3 w-3 animate-spin" />
-                                                    ) : hasFeature ? (
-                                                        <span>
-                                                            Remove
-                                                        </span>
-                                                    ) : (
-                                                        <span>
-                                                            Add
-                                                        </span>
-                                                    )}
+                                                    ) : hasFeature ? (<span> Remove </span>) : (<span> Add </span>)}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>

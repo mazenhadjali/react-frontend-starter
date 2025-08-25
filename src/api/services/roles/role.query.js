@@ -1,5 +1,3 @@
-// services/roles/role.query.js
-
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { roleService } from "./role.services";

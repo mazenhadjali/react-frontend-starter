@@ -6,7 +6,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardAction,
   CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,16 +18,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser, useRevokeRole, useDeleteUser } from "@/api/services";
-import { 
-  ArrowLeft, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
+import { useUser, useDeleteUser } from "@/api/services";
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  MoreHorizontal,
+  Edit,
+  Trash2,
   Shield,
   User,
   Settings,
@@ -43,19 +42,10 @@ const UserPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: user, isLoading, error } = useUser(id);
-  const revokeRole = useRevokeRole();
   const deleteUser = useDeleteUser();
 
   const handleBack = () => {
     navigate(ROUTES.USERS.path);
-  };
-
-  const handleRevokeRole = async (roleId) => {
-    try {
-      await revokeRole.mutateAsync({ userId: parseInt(id), roleId });
-    } catch (error) {
-      console.error("Failed to revoke role:", error);
-    }
   };
 
   const handleDeleteUser = async () => {
@@ -93,8 +83,8 @@ const UserPage = () => {
   if (error) {
     return (
       <div className="w-full max-w-full space-y-6">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={handleBack}
           className="mb-4"
         >
@@ -124,8 +114,8 @@ const UserPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             onClick={handleBack}
             className="h-10 w-10 p-0"
@@ -164,7 +154,7 @@ const UserPage = () => {
                 Activity Log
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={handleDeleteUser}
                 className="text-red-600 focus:text-red-600"
               >
@@ -186,8 +176,8 @@ const UserPage = () => {
                 <div className="relative">
                   {user?.avatar ? (
                     <Avatar className="h-20 w-20">
-                      <img 
-                        src={user.avatar.path} 
+                      <img
+                        src={user.avatar.path}
                         alt={user.username}
                         className="h-full w-full object-cover"
                       />
@@ -201,7 +191,7 @@ const UserPage = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <CardTitle className="text-xl mb-1">
-                    {user?.firstName && user?.lastName 
+                    {user?.firstName && user?.lastName
                       ? `${user.firstName} ${user.lastName}`
                       : user?.username
                     }
@@ -309,7 +299,7 @@ const UserPage = () => {
                       <div className="flex flex-wrap gap-1 mt-2">
                         {role.features?.slice(0, 3).map((feature, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
-                            {feature.replace(/_/g, ' ').toLowerCase()}
+                            {feature}
                           </Badge>
                         ))}
                         {role.features?.length > 3 && (
@@ -319,13 +309,6 @@ const UserPage = () => {
                         )}
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => handleRevokeRole(role.id)}
-                    >
-                      <UserX className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
                 {(!user?.roles || user.roles.length === 0) && (
@@ -343,10 +326,6 @@ const UserPage = () => {
                     <UserCheck className="h-4 w-4 mr-2" />
                     Manage Roles
                   </Link>
-                </Button>
-                <Button variant="outline" size="sm" className="flex-1">
-                  <UserCheck className="h-4 w-4 mr-2" />
-                  Assign Role
                 </Button>
               </div>
             </CardFooter>
@@ -375,9 +354,9 @@ const UserPage = () => {
                   View Activity
                 </Button>
                 <Separator className="my-2" />
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="w-full justify-start text-red-600 hover:text-red-700"
                   onClick={handleDeleteUser}
                 >

@@ -1,7 +1,5 @@
-// services/features/feature.services.js
-
 import axiosClient from "@/api/axiosClient";
-import { FeatureEndpoints } from "../../endpoints";
+import { FeatureEndpoints } from "@/api/endpoints";
 
 /**
  * Feature management service

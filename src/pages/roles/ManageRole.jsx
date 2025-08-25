@@ -10,16 +10,12 @@ import { ROUTES } from '@/constants';
 const ManageRole = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: role, isLoading, refetch } = useRole(id);
+  const { data: role, isLoading } = useRole(id);
 
   const handleBack = () => {
     navigate(ROUTES.ROLE_DETAIL.path.replace(':id', id));
   };
 
-  const handleFeatureChange = () => {
-    // Refresh role data when features change
-    refetch();
-  };
 
   if (isLoading) {
     return (
@@ -65,7 +61,6 @@ const ManageRole = () => {
       <FeatureAssignmentTable 
         roleId={id}
         roleFeatures={role?.features || []}
-        onFeatureChange={handleFeatureChange}
       />
     </div>
   );

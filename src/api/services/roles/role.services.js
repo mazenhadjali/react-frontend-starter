@@ -1,7 +1,5 @@
-// services/roles/role.services.js
-
 import axiosClient from "@/api/axiosClient";
-import { RoleEndpoints } from "../../endpoints";
+import { RoleEndpoints } from "@/api/endpoints";
 
 /**
  * Role management service

@@ -195,7 +195,7 @@ const Roles = () => {
                             <>
                               {role.features.slice(0, 3).map((feature, index) => (
                                 <Badge key={index} variant="secondary" className="text-xs">
-                                  {feature.replace(/_/g, ' ').toLowerCase()}
+                                  {feature}
                                 </Badge>
                               ))}
                               {role.features.length > 3 && (

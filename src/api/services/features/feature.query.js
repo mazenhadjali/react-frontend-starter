@@ -1,5 +1,3 @@
-// services/features/feature.query.js
-
 import { useQuery } from "@tanstack/react-query";
 import { featureService } from "./feature.services";
 
