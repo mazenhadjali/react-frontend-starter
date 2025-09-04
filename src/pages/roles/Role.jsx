@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -17,7 +18,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useRole, useDeleteRole } from "@/api/services";
+import { getRoleById, deleteRole } from "@/api/services";
 import {
     ArrowLeft,
     Shield,
@@ -27,12 +28,34 @@ import {
     Settings,
 } from "lucide-react";
 import { ROUTES } from "@/constants";
+import clsx from "clsx";
 
 const Role = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data: role, isLoading, error } = useRole(id);
-    const deleteRole = useDeleteRole();
+    const [role, setRole] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                setIsLoading(true);
+                setError(null);
+                const data = await getRoleById(id);
+                setRole(data);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchRole();
+        }
+    }, [id]);
 
     const handleBack = () => {
         navigate(ROUTES.ROLES.path);
@@ -41,10 +64,13 @@ const Role = () => {
     const handleDeleteRole = async () => {
         if (window.confirm(`Are you sure you want to delete the role "${role?.name}"?`)) {
             try {
-                await deleteRole.mutateAsync(parseInt(id));
+                setIsDeleting(true);
+                await deleteRole(parseInt(id));
                 navigate(ROUTES.ROLES.path);
             } catch (error) {
                 console.error("Failed to delete role:", error);
+            } finally {
+                setIsDeleting(false);
             }
         }
     };
@@ -147,7 +173,7 @@ const Role = () => {
                                 onClick={handleDeleteRole}
                                 className="text-red-600 focus:text-red-600"
                             >
-                                <Trash2 className="h-4 w-4 mr-2" />
+                                <Trash2 className={clsx("h-4 w-4 mr-2", isDeleting && "animate-spin")} />
                                 Delete Role
                             </DropdownMenuItem>
                         </DropdownMenuContent>

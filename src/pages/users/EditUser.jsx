@@ -6,7 +6,7 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useUpdateUser, useUser } from '@/api/services';
+import { updateUser, getUserById } from '@/api/services';
 import { ROUTES } from '@/constants';
 
 const EditUser = () => {
@@ -21,9 +21,28 @@ const EditUser = () => {
         cin: ''
     });
     const [errors, setErrors] = useState({});
+    const [user, setUser] = useState(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: user, isLoading: isLoadingUser } = useUser(id);
-    const updateUserMutation = useUpdateUser();
+    // Fetch user data
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                setIsLoadingUser(true);
+                const userData = await getUserById(id);
+                setUser(userData);
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+            } finally {
+                setIsLoadingUser(false);
+            }
+        };
+
+        if (id) {
+            fetchUser();
+        }
+    }, [id]);
 
     // Initialize form data when user is loaded
     useEffect(() => {
@@ -104,11 +123,14 @@ const EditUser = () => {
                 cin: formData.cin.trim()
             };
 
-            await updateUserMutation.mutateAsync({ id: parseInt(id), userData });
+            setIsSubmitting(true);
+            await updateUser(parseInt(id), userData);
             navigate(ROUTES.USER_DETAIL.path.replace(':id', id));
         } catch (error) {
             console.error('Error updating user:', error);
             setErrors({ submit: 'Failed to update user. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -273,11 +295,11 @@ const EditUser = () => {
                     </Button>
                     <Button
                         type="submit"
-                        disabled={updateUserMutation.isPending}
+                        disabled={isSubmitting}
                         className="flex items-center gap-2"
                     >
                         <Save className="h-4 w-4" />
-                        {updateUserMutation.isPending ? 'Updating...' : 'Update User'}
+                        {isSubmitting ? 'Updating...' : 'Update User'}
                     </Button>
                 </div>
             </form>

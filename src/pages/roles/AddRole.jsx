@@ -12,21 +12,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { useCreateRole, useFeatures } from "@/api/services";
+import { createRole } from "@/api/services";
 import { ArrowLeft, Shield, Plus, Check } from "lucide-react";
 import { ROUTES } from "@/constants";
 
 const AddRole = () => {
   const navigate = useNavigate();
-  const { data: availableFeatures } = useFeatures();
-  const createRole = useCreateRole();
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -45,11 +44,11 @@ const AddRole = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = "Role name is required";
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = "Role description is required";
     }
@@ -60,7 +59,7 @@ const AddRole = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -68,7 +67,7 @@ const AddRole = () => {
     setIsSubmitting(true);
     try {
       // First create the role
-      const newRole = await createRole.mutateAsync({
+      const newRole = await createRole({
         name: formData.name.trim(),
         description: formData.description.trim(),
       });
@@ -94,8 +93,8 @@ const AddRole = () => {
     <div className="w-full max-w-full space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           onClick={handleBack}
           className="h-10 w-10 p-0"
@@ -113,124 +112,66 @@ const AddRole = () => {
       </div>
 
       {/* Form */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Role Information</CardTitle>
-              <CardDescription>
-                Enter the basic information for the new role.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Role Name *</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Enter role name..."
-                    className={errors.name ? "border-red-500" : ""}
-                  />
-                  {errors.name && (
-                    <p className="text-sm text-red-600">{errors.name}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description *</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Enter role description..."
-                    className={errors.description ? "border-red-500" : ""}
-                    rows={4}
-                  />
-                  {errors.description && (
-                    <p className="text-sm text-red-600">{errors.description}</p>
-                  )}
-                </div>
-
-                <div className="flex justify-end gap-3 pt-6 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleBack}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Creating..." : "Create Role"}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Features Preview */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Available Features
-              </CardTitle>
-              <CardDescription>
-                Features can be assigned after role creation
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {availableFeatures?.map((feature) => (
-                  <div 
-                    key={feature} 
-                    className="flex items-center justify-between p-2 rounded-lg border bg-gray-50"
-                  >
-                    <span className="text-sm text-gray-600">
-                      {feature}
-                    </span>
-                    <Badge variant="outline" className="text-xs">
-                      Available
-                    </Badge>
-                  </div>
-                ))}
+      <div className="lg:col-span-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Role Information</CardTitle>
+            <CardDescription>
+              Enter the basic information for the new role.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">Role Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Enter role name..."
+                  className={errors.name ? "border-red-500" : ""}
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-600">{errors.name}</p>
+                )}
               </div>
-              <p className="text-xs text-gray-500 mt-4">
-                * Features will be assignable after the role is created
-              </p>
-            </CardContent>
-          </Card>
 
-          {/* Role Preview */}
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Role Preview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Name</Label>
-                  <p className="text-sm">{formData.name || "Role name will appear here"}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Description</Label>
-                  <p className="text-sm text-gray-600">
-                    {formData.description || "Role description will appear here"}
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description *</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Enter role description..."
+                  className={errors.description ? "border-red-500" : ""}
+                  rows={4}
+                />
+                {errors.description && (
+                  <p className="text-sm text-red-600">{errors.description}</p>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+
+              <div className="flex justify-end gap-3 pt-6 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBack}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Creating..." : "Create Role"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

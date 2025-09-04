@@ -1,16 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Shield } from 'lucide-react';
-import { useRole } from '@/api/services';
+import { getRoleById } from '@/api/services';
 import FeatureAssignmentTable from '@/components/FeatureAssignmentTable';
 import { ROUTES } from '@/constants';
 
 const ManageRole = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: role, isLoading } = useRole(id);
+  const [role, setRole] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getRoleById(id);
+        setRole(data);
+      } catch (error) {
+        console.error('Failed to fetch role:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchRole();
+    }
+  }, [id]);
 
   const handleBack = () => {
     navigate(ROUTES.ROLE_DETAIL.path.replace(':id', id));

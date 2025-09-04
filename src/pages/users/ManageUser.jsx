@@ -1,16 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, User as UserIcon } from 'lucide-react';
-import { useUser } from '@/api/services';
+import { getUserById } from '@/api/services';
 import RoleAssignmentTable from '@/components/RoleAssignmentTable';
 import { ROUTES } from '@/constants';
 
 const ManageUser = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: user, isLoading, refetch } = useUser(id);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getUserById(id);
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchUser();
+    }
+  }, [id]);
+
+  const refetchUser = async () => {
+    try {
+      const data = await getUserById(id);
+      setUser(data);
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
+  };
 
   const handleBack = () => {
     navigate(ROUTES.USER_DETAIL.path.replace(':id', id));
@@ -18,7 +46,7 @@ const ManageUser = () => {
 
   const handleRoleChange = () => {
     // Refresh user data when roles change
-    refetch();
+    refetchUser();
   };
 
   if (isLoading) {

@@ -5,6 +5,7 @@ import { useUserStore } from '@/store';
  * @returns {Object} User data and authentication utilities
  */
 export const useAuth = () => {
+
     const {
         user,
         isLoading,

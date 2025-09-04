@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, UserPlus } from 'lucide-react';
-import { useCreateUser } from '@/api/services';
+import { createUser } from '@/api/services';
 import { ROUTES } from '@/constants';
 
 const AddUser = () => {
@@ -20,8 +20,7 @@ const AddUser = () => {
     phone: ''
   });
   const [errors, setErrors] = useState({});
-
-  const createUserMutation = useCreateUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -80,6 +79,7 @@ const AddUser = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const newUser = {
         username: formData.username.trim(),
         email: formData.email.trim(),
@@ -90,11 +90,13 @@ const AddUser = () => {
         password: formData.password,
       };
 
-      const result = await createUserMutation.mutateAsync(newUser);
+      const result = await createUser(newUser);
       navigate(ROUTES.USER_DETAIL.path.replace(':id', result.id));
     } catch (error) {
       console.error('Error creating user:', error);
       setErrors({ submit: 'Failed to create user. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -265,11 +267,11 @@ const AddUser = () => {
           </Button>
           <Button
             type="submit"
-            disabled={createUserMutation.isPending}
+            disabled={isSubmitting}
             className="flex items-center gap-2"
           >
             <UserPlus className="h-4 w-4" />
-            {createUserMutation.isPending ? 'Creating...' : 'Create User'}
+            {isSubmitting ? 'Creating...' : 'Create User'}
           </Button>
         </div>
       </form>

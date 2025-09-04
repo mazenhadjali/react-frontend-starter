@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser, useDeleteUser } from "@/api/services";
+import { getUserById, deleteUser } from "@/api/services";
 import {
   ArrowLeft,
   Mail,
@@ -37,12 +38,34 @@ import {
   UserX
 } from "lucide-react";
 import { ROUTES } from "@/constants";
+import clsx from "clsx";
 
 const UserPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: user, isLoading, error } = useUser(id);
-  const deleteUser = useDeleteUser();
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getUserById(id);
+        setUser(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchUser();
+    }
+  }, [id]);
 
   const handleBack = () => {
     navigate(ROUTES.USERS.path);
@@ -51,10 +74,13 @@ const UserPage = () => {
   const handleDeleteUser = async () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await deleteUser.mutateAsync(parseInt(id));
+        setIsDeleting(true);
+        await deleteUser(parseInt(id));
         navigate(ROUTES.USERS.path);
       } catch (error) {
         console.error("Failed to delete user:", error);
+      } finally {
+        setIsDeleting(false);
       }
     }
   };
@@ -158,7 +184,7 @@ const UserPage = () => {
                 onClick={handleDeleteUser}
                 className="text-red-600 focus:text-red-600"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className={clsx("h-4 w-4 mr-2", isDeleting && "animate-spin")} />
                 Delete User
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -331,41 +357,6 @@ const UserPage = () => {
             </CardFooter>
           </Card>
 
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-              <CardDescription>
-                Common user management tasks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Reset Password
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Activity className="h-4 w-4 mr-2" />
-                  View Activity
-                </Button>
-                <Separator className="my-2" />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start text-red-600 hover:text-red-700"
-                  onClick={handleDeleteUser}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete User
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

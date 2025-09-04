@@ -1,25 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useFeatures, useAddFeatures, useRemoveFeatures, useRole } from '@/api/services';
+import { getAllFeatures, addFeatures, removeFeatures, getRoleById } from '@/api/services';
 import { Search, Code, Settings, Check, X } from 'lucide-react';
 
 const FeatureAssignmentTable = ({ roleId }) => {
-
-    const addFeatures = useAddFeatures();
-    const removeFeatures = useRemoveFeatures();
-    const { data: roleData, isLoading: isLoadingRole } = useRole(roleId);
-
-    const [roleFeatures, setRoleFeatures] = useState(roleData?.features || []);
-
+    const [roleData, setRoleData] = useState(null);
+    const [isLoadingRole, setIsLoadingRole] = useState(true);
+    const [allFeatures, setAllFeatures] = useState([]);
+    const [isLoadingFeatures, setIsLoadingFeatures] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [assigningFeature, setAssigningFeature] = useState(null);
 
-    const { data: allFeatures = [], isLoading: isLoadingFeatures } = useFeatures();
+    // Fetch role data
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                setIsLoadingRole(true);
+                const data = await getRoleById(roleId);
+                setRoleData(data);
+            } catch (error) {
+                console.error('Failed to fetch role:', error);
+            } finally {
+                setIsLoadingRole(false);
+            }
+        };
 
+        if (roleId) {
+            fetchRole();
+        }
+    }, [roleId]);
+
+    // Fetch available features
+    useEffect(() => {
+        const fetchFeatures = async () => {
+            try {
+                setIsLoadingFeatures(true);
+                const data = await getAllFeatures();
+                setAllFeatures(data);
+            } catch (error) {
+                console.error('Failed to fetch features:', error);
+            } finally {
+                setIsLoadingFeatures(false);
+            }
+        };
+
+        fetchFeatures();
+    }, []);
+
+    const roleFeatures = roleData?.features || [];
 
     const filteredFeatures = allFeatures.filter(feature =>
         searchTerm === '' ||
@@ -32,25 +64,14 @@ const FeatureAssignmentTable = ({ roleId }) => {
             const hasFeature = roleFeatures?.includes(feature);
 
             if (hasFeature) {
-                await removeFeatures.mutateAsync({
-                    roleId: parseInt(roleId),
-                    featureData: { feature: feature }
-                });
+                await removeFeatures(parseInt(roleId), { feature: feature });
             } else {
-                await addFeatures.mutateAsync({
-                    roleId: parseInt(roleId),
-                    featureData: { feature: feature }
-                });
+                await addFeatures(parseInt(roleId), { feature: feature });
             }
 
-            //  now i want to change the feature status in the table
-            setRoleFeatures((prevFeatures) => {
-                if (hasFeature) {
-                    return prevFeatures.filter((f) => f !== feature);
-                } else {
-                    return [...prevFeatures, feature];
-                }
-            });
+            // Refresh role data to get updated features
+            const updatedRole = await getRoleById(roleId);
+            setRoleData(updatedRole);
         } catch (error) {
             console.error('Failed to toggle feature:', error);
         } finally {

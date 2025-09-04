@@ -1,20 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+// features/feature.helpers.js
 import { featureService } from "./feature.services";
 
-// Query keys for React Query
-export const featureQueryKeys = {
-    all: ['features'],
-    lists: () => [...featureQueryKeys.all, 'list'],
-};
-
 /**
- * Hook to fetch all available features
+ * Get all available features with error handling
+ * @returns {Promise<Array>} Array of feature names
  */
-export function useFeatures() {
-    return useQuery({
-        queryKey: featureQueryKeys.lists(),
-        queryFn: () => featureService.getAllFeatures(),
-    });
+export async function getAllFeatures() {
+    try {
+        return await featureService.getAllFeatures();
+    } catch (error) {
+        console.error("Failed to fetch features:", error);
+        throw error;
+    }
 }
 
 /**

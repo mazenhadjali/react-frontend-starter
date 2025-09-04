@@ -7,7 +7,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Label } from '../../components/ui/label';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useRole, useUpdateRole } from '@/api/services';
+import { getRoleById, updateRole } from '@/api/services';
 import { ROUTES } from '@/constants';
 
 const EditRole = () => {
@@ -18,9 +18,28 @@ const EditRole = () => {
         description: ''
     });
     const [errors, setErrors] = useState({});
+    const [role, setRole] = useState(null);
+    const [isLoadingRole, setIsLoadingRole] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { data: role, isLoading: isLoadingRole } = useRole(id);
-    const updateRoleMutation = useUpdateRole();
+    // Fetch role data
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                setIsLoadingRole(true);
+                const data = await getRoleById(id);
+                setRole(data);
+            } catch (error) {
+                console.error('Failed to fetch role:', error);
+            } finally {
+                setIsLoadingRole(false);
+            }
+        };
+
+        if (id) {
+            fetchRole();
+        }
+    }, [id]);
 
     // Initialize form data when role is loaded
     useEffect(() => {
@@ -75,16 +94,19 @@ const EditRole = () => {
         }
 
         try {
+            setIsSubmitting(true);
             const roleData = {
                 name: formData.name.trim(),
                 description: formData.description.trim()
             };
 
-            await updateRoleMutation.mutateAsync({ id: parseInt(id), roleData });
+            await updateRole(parseInt(id), roleData);
             navigate(ROUTES.ROLE_DETAIL.path.replace(':id', id));
         } catch (error) {
             console.error('Error updating role:', error);
             setErrors({ submit: 'Failed to update role. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -182,11 +204,11 @@ const EditRole = () => {
                     </Button>
                     <Button
                         type="submit"
-                        disabled={updateRoleMutation.isPending}
+                        disabled={isSubmitting}
                         className="flex items-center gap-2"
                     >
                         <Save className="h-4 w-4" />
-                        {updateRoleMutation.isPending ? 'Updating...' : 'Update Role'}
+                        {isSubmitting ? 'Updating...' : 'Update Role'}
                     </Button>
                 </div>
             </form>

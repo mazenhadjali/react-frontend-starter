@@ -1,22 +1,48 @@
-// hooks/useAuth.js
-import { useMutation } from "@tanstack/react-query";
+// auth/auth.helpers.js
 import { toast } from "sonner";
 import { auth } from "./auth.services";
 
-
-export function useLogin() {
-    return useMutation({
-        mutationFn: (creds) => auth.login(creds),
-        onSuccess: () => {
-            toast.success("Welcome back!");
-        },
-        meta: { errorMessage: "Login failed", mutationId: "login" },
-    });
+/**
+ * Login function with toast notifications
+ * @param {Object} credentials - Login credentials
+ * @param {string} credentials.username - Username
+ * @param {string} credentials.password - Password
+ * @returns {Promise<Object>} User data and token
+ */
+export async function loginUser(credentials) {
+    try {
+        const result = await auth.login(credentials);
+        toast.success("Welcome back!");
+        return result;
+    } catch (error) {
+        toast.error(`Login failed: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
-export function useLogout() {
-    return useMutation({
-        mutationFn: () => auth.logout(),
-        meta: { errorMessage: "Logout failed", mutationId: "logout" },
-    });
+/**
+ * Logout function with toast notifications
+ * @returns {Promise<void>}
+ */
+export async function logoutUser() {
+    try {
+        await auth.logout();
+        return true;
+    } catch (error) {
+        toast.error(`Logout failed: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
+}
+
+/**
+ * Get current user profile
+ * @returns {Promise<Object>} User profile data
+ */
+export async function getCurrentUser() {
+    try {
+        return await auth.me();
+    } catch (error) {
+        console.error("Failed to get current user:", error);
+        throw error;
+    }
 }

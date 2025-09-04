@@ -9,11 +9,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useUsers } from "@/api/services";
+import { getAllUsers } from "@/api/services";
 import { MoreHorizontal, Mail, Phone, User, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const Users = () => {
-  const { data: users, isLoading, error } = useUsers();
+  const [users, setUsers] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getAllUsers();
+        setUsers(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <div className="w-full max-w-full space-y-4 sm:space-y-6 lg:space-y-8">

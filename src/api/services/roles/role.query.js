@@ -1,114 +1,113 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+// roles/role.helpers.js
 import { toast } from "sonner";
 import { roleService } from "./role.services";
 
-// Query keys for React Query
-export const roleQueryKeys = {
-    all: ['roles'],
-    lists: () => [...roleQueryKeys.all, 'list'],
-    list: (filters) => [...roleQueryKeys.lists(), { filters }],
-    details: () => [...roleQueryKeys.all, 'detail'],
-    detail: (id) => [...roleQueryKeys.details(), id],
-};
-
 /**
- * Hook to fetch all roles
+ * Get all roles with error handling
+ * @returns {Promise<Array>} Array of role objects
  */
-export function useRoles() {
-    return useQuery({
-        queryKey: roleQueryKeys.lists(),
-        queryFn: () => roleService.getAllRoles(),
-    });
+export async function getAllRoles() {
+    try {
+        return await roleService.getAllRoles();
+    } catch (error) {
+        console.error("Failed to fetch roles:", error);
+        throw error;
+    }
 }
 
 /**
- * Hook to fetch a role by ID
+ * Get a role by ID with error handling
  * @param {number} id - Role ID
+ * @returns {Promise<Object>} Role object
  */
-export function useRole(id) {
-    return useQuery({
-        queryKey: roleQueryKeys.detail(id),
-        queryFn: () => roleService.getRoleById(id),
-        enabled: !!id,
-    });
+export async function getRoleById(id) {
+    try {
+        return await roleService.getRoleById(id);
+    } catch (error) {
+        console.error(`Failed to fetch role ${id}:`, error);
+        throw error;
+    }
 }
 
 /**
- * Hook to create a new role
+ * Create a new role with toast notifications
+ * @param {Object} roleData - Role creation data
+ * @returns {Promise<Object>} Created role object
  */
-export function useCreateRole() {
-    return useMutation({
-        mutationFn: (roleData) => roleService.createRole(roleData),
-        onSuccess: () => {
-            toast.success("Role created successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to create role", 
-            mutationId: "createRole" 
-        },
-    });
+export async function createRole(roleData) {
+    try {
+        const result = await roleService.createRole(roleData);
+        toast.success("Role created successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to create role: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to update a role
+ * Update a role with toast notifications
+ * @param {number} id - Role ID
+ * @param {Object} roleData - Role update data
+ * @returns {Promise<Object>} Updated role object
  */
-export function useUpdateRole() {
-    return useMutation({
-        mutationFn: ({ id, roleData }) => roleService.updateRole(id, roleData),
-        onSuccess: () => {
-            toast.success("Role updated successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to update role", 
-            mutationId: "updateRole" 
-        },
-    });
+export async function updateRole(id, roleData) {
+    try {
+        const result = await roleService.updateRole(id, roleData);
+        toast.success("Role updated successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to update role: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to delete a role
+ * Delete a role with toast notifications
+ * @param {number} id - Role ID
+ * @returns {Promise<void>}
  */
-export function useDeleteRole() {
-    return useMutation({
-        mutationFn: (id) => roleService.deleteRole(id),
-        onSuccess: () => {
-            toast.success("Role deleted successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to delete role", 
-            mutationId: "deleteRole" 
-        },
-    });
+export async function deleteRole(id) {
+    try {
+        await roleService.deleteRole(id);
+        toast.success("Role deleted successfully!");
+        return true;
+    } catch (error) {
+        toast.error(`Failed to delete role: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to add features to a role
+ * Add features to a role with toast notifications
+ * @param {number} roleId - Role ID
+ * @param {Object} featureData - Feature data
+ * @returns {Promise<string>} Success message
  */
-export function useAddFeatures() {
-    return useMutation({
-        mutationFn: ({ roleId, featureData }) => roleService.addFeatures(roleId, featureData),
-        onSuccess: () => {
-            toast.success("Features added successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to add features", 
-            mutationId: "addFeatures" 
-        },
-    });
+export async function addFeatures(roleId, featureData) {
+    try {
+        const result = await roleService.addFeatures(roleId, featureData);
+        toast.success("Features added successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to add features: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to remove features from a role
+ * Remove features from a role with toast notifications
+ * @param {number} roleId - Role ID
+ * @param {Object} featureData - Feature data
+ * @returns {Promise<string>} Success message
  */
-export function useRemoveFeatures() {
-    return useMutation({
-        mutationFn: ({ roleId, featureData }) => roleService.removeFeatures(roleId, featureData),
-        onSuccess: () => {
-            toast.success("Features removed successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to remove features", 
-            mutationId: "removeFeatures" 
-        },
-    });
+export async function removeFeatures(roleId, featureData) {
+    try {
+        const result = await roleService.removeFeatures(roleId, featureData);
+        toast.success("Features removed successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to remove features: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }

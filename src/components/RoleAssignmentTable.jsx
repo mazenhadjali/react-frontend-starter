@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -17,7 +17,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useRoles, useGrantRole, useRevokeRole } from '@/api/services';
+import { getAllRoles, grantRole, revokeRole } from '@/api/services';
 import { 
   Plus, 
   Minus, 
@@ -31,10 +31,24 @@ import {
 const RoleAssignmentTable = ({ userId, userRoles = [], onRoleChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [assigningRole, setAssigningRole] = useState(null);
-  
-  const { data: allRoles = [], isLoading } = useRoles();
-  const grantRole = useGrantRole();
-  const revokeRole = useRevokeRole();
+  const [allRoles, setAllRoles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getAllRoles();
+        setAllRoles(data);
+      } catch (error) {
+        console.error('Failed to fetch roles:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   const userRoleIds = userRoles.map(role => role.id);
   
@@ -49,15 +63,9 @@ const RoleAssignmentTable = ({ userId, userRoles = [], onRoleChange }) => {
       const hasRole = userRoleIds.includes(role.id);
       
       if (hasRole) {
-        await revokeRole.mutateAsync({ 
-          userId: parseInt(userId), 
-          roleId: role.id 
-        });
+        await revokeRole(parseInt(userId), role.id);
       } else {
-        await grantRole.mutateAsync({ 
-          userId: parseInt(userId), 
-          roleId: role.id 
-        });
+        await grantRole(parseInt(userId), role.id);
       }
       
       // Callback to refresh user data

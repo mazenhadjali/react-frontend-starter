@@ -1,115 +1,114 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+// users/user.helpers.js
 import { toast } from "sonner";
 import { userService } from "./user.services";
 
-// Query keys for React Query
-export const userQueryKeys = {
-    all: ['users'],
-    lists: () => [...userQueryKeys.all, 'list'],
-    list: (filters) => [...userQueryKeys.lists(), { filters }],
-    details: () => [...userQueryKeys.all, 'detail'],
-    detail: (id) => [...userQueryKeys.details(), id],
-};
-
 /**
- * Hook to fetch all users
+ * Get all users with error handling
  * @param {string} params - Query parameters for filtering
+ * @returns {Promise<Array>} Array of user objects
  */
-export function useUsers(params) {
-    return useQuery({
-        queryKey: userQueryKeys.list(params),
-        queryFn: () => userService.getAllUsers(params),
-    });
+export async function getAllUsers(params) {
+    try {
+        return await userService.getAllUsers(params);
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
+        throw error;
+    }
 }
 
 /**
- * Hook to fetch a user by ID
+ * Get a user by ID with error handling
  * @param {number} id - User ID
+ * @returns {Promise<Object>} User object
  */
-export function useUser(id) {
-    return useQuery({
-        queryKey: userQueryKeys.detail(id),
-        queryFn: () => userService.getUserById(id),
-        enabled: !!id,
-    });
+export async function getUserById(id) {
+    try {
+        return await userService.getUserById(id);
+    } catch (error) {
+        console.error(`Failed to fetch user ${id}:`, error);
+        throw error;
+    }
 }
 
 /**
- * Hook to create a new user
+ * Create a new user with toast notifications
+ * @param {Object} userData - User creation data
+ * @returns {Promise<Object>} Created user object
  */
-export function useCreateUser() {
-    return useMutation({
-        mutationFn: (userData) => userService.createUser(userData),
-        onSuccess: () => {
-            toast.success("User created successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to create user", 
-            mutationId: "createUser" 
-        },
-    });
+export async function createUser(userData) {
+    try {
+        const result = await userService.createUser(userData);
+        toast.success("User created successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to create user: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to update a user
+ * Update a user with toast notifications
+ * @param {number} id - User ID
+ * @param {Object} userData - User update data
+ * @returns {Promise<Object>} Updated user object
  */
-export function useUpdateUser() {
-    return useMutation({
-        mutationFn: ({ id, userData }) => userService.updateUser(id, userData),
-        onSuccess: () => {
-            toast.success("User updated successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to update user", 
-            mutationId: "updateUser" 
-        },
-    });
+export async function updateUser(id, userData) {
+    try {
+        const result = await userService.updateUser(id, userData);
+        toast.success("User updated successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to update user: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to delete a user
+ * Delete a user with toast notifications
+ * @param {number} id - User ID
+ * @returns {Promise<void>}
  */
-export function useDeleteUser() {
-    return useMutation({
-        mutationFn: (id) => userService.deleteUser(id),
-        onSuccess: () => {
-            toast.success("User deleted successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to delete user", 
-            mutationId: "deleteUser" 
-        },
-    });
+export async function deleteUser(id) {
+    try {
+        await userService.deleteUser(id);
+        toast.success("User deleted successfully!");
+        return true;
+    } catch (error) {
+        toast.error(`Failed to delete user: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to grant a role to a user
+ * Grant a role to a user with toast notifications
+ * @param {number} userId - User ID
+ * @param {number} roleId - Role ID
+ * @returns {Promise<string>} Success message
  */
-export function useGrantRole() {
-    return useMutation({
-        mutationFn: ({ userId, roleId }) => userService.grantRole(userId, roleId),
-        onSuccess: () => {
-            toast.success("Role granted successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to grant role", 
-            mutationId: "grantRole" 
-        },
-    });
+export async function grantRole(userId, roleId) {
+    try {
+        const result = await userService.grantRole(userId, roleId);
+        toast.success("Role granted successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to grant role: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }
 
 /**
- * Hook to revoke a role from a user
+ * Revoke a role from a user with toast notifications
+ * @param {number} userId - User ID
+ * @param {number} roleId - Role ID
+ * @returns {Promise<string>} Success message
  */
-export function useRevokeRole() {
-    return useMutation({
-        mutationFn: ({ userId, roleId }) => userService.revokeRole(userId, roleId),
-        onSuccess: () => {
-            toast.success("Role revoked successfully!");
-        },
-        meta: { 
-            errorMessage: "Failed to revoke role", 
-            mutationId: "revokeRole" 
-        },
-    });
+export async function revokeRole(userId, roleId) {
+    try {
+        const result = await userService.revokeRole(userId, roleId);
+        toast.success("Role revoked successfully!");
+        return result;
+    } catch (error) {
+        toast.error(`Failed to revoke role: ${error.message || "An unexpected error occurred"}`);
+        throw error;
+    }
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRoles, useDeleteRole } from "@/api/services";
+import { getAllRoles, deleteRole } from "@/api/services";
 import { 
   Shield, 
   MoreHorizontal, 
@@ -38,15 +38,36 @@ import {
 } from "lucide-react";
 
 const Roles = () => {
-  const { data: roles, isLoading, error } = useRoles();
-  const deleteRole = useDeleteRole();
+  const [roles, setRoles] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [deletingRoleId, setDeletingRoleId] = useState(null);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getAllRoles();
+        setRoles(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   const handleDeleteRole = async (roleId, roleName) => {
     if (window.confirm(`Are you sure you want to delete the role "${roleName}"?`)) {
       setDeletingRoleId(roleId);
       try {
-        await deleteRole.mutateAsync(roleId);
+        await deleteRole(roleId);
+        // Refetch roles after deletion
+        const updatedRoles = await getAllRoles();
+        setRoles(updatedRoles);
       } catch (error) {
         console.error("Failed to delete role:", error);
       } finally {
