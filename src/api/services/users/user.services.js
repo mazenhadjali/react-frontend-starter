@@ -7,6 +7,16 @@ import { UserEndpoints } from "@/api/endpoints";
  */
 export const userService = {
     /**
+     * Reset a user's password
+     * @param {number} id - User ID
+     * @param {{ password: string, confirmPassword: string }} passwordData - New password data
+     * @returns {Promise<string>} Success message
+     */
+    async resetPassword(id, passwordData) {
+        const { data } = await axiosClient.put(UserEndpoints.resetPassword(id), passwordData);
+        return data;
+    },
+    /**
      * Get all users
      * @param {string} params - Query parameters for filtering
      * @returns {Promise<AUserDto[]>} Array of user objects

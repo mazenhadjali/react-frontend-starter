@@ -36,6 +36,9 @@ export const UserEndpoints = {
 
     /** revoke a role from a user */
     revokeRole: (userId, roleId) => `/api/v1/users/${userId}/roles/${roleId}`,
+
+    /** Reset a user's password */
+    resetPassword: (id) => `/api/v1/users/${id}/resetpassword`,
 };
 
 /**

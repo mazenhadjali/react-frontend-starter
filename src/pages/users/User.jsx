@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUserById, deleteUser } from "@/api/services";
+import { getUserById, deleteUser, userService } from "@/api/services";
 import {
   ArrowLeft,
   Mail,
@@ -39,6 +39,10 @@ import {
 } from "lucide-react";
 import { ROUTES } from "@/constants";
 import clsx from "clsx";
+import { useForm } from "react-hook-form";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const UserPage = () => {
   const { id } = useParams();
@@ -47,6 +51,38 @@ const UserPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // added for password reset
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState("");
+  const [resetError, setResetError] = useState("");
+
+  // added for password reset
+  const form = useForm({
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onResetPassword = async (data) => {
+    try {
+      setResetLoading(true);
+      setResetSuccess("");
+      setResetError("");
+      await userService.resetPassword(parseInt(id), {
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+      setResetSuccess("Password updated successfully");
+      form.reset();
+    } catch (err) {
+      setResetError("Failed to update password");
+      console.error(err);
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -172,12 +208,8 @@ const UserPage = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <Settings className="h-4 w-4 mr-2" />
-                User Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem>
                 <Activity className="h-4 w-4 mr-2" />
-                Activity Log
+                Activity Log (coming soon)
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -276,14 +308,14 @@ const UserPage = () => {
                       <Calendar className="h-4 w-4 text-gray-400" />
                       <div>
                         <span className="text-gray-600">Joined:</span>
-                        <span className="ml-2">Jan 15, 2024</span>
+                        <span className="ml-2">--</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Clock className="h-4 w-4 text-gray-400" />
                       <div>
                         <span className="text-gray-600">Last active:</span>
-                        <span className="ml-2">2 hours ago</span>
+                        <span className="ml-2">--</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -291,7 +323,7 @@ const UserPage = () => {
                       <div>
                         <span className="text-gray-600">Status:</span>
                         <Badge variant="secondary" className="ml-2 bg-green-100 text-green-800">
-                          Active
+                          --
                         </Badge>
                       </div>
                     </div>
@@ -299,6 +331,81 @@ const UserPage = () => {
                 </div>
               </div>
             </CardContent>
+          </Card>
+          <Separator className="my-6" />
+
+          <Card className="mt-6 border-0 shadow-none bg-transparent">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="reset-password" className="rounded-lg border bg-white/80 dark:bg-zinc-900/80 shadow-sm">
+                <AccordionTrigger className="px-6 py-4 text-lg font-semibold flex items-center gap-2">
+                  <UserX className="h-5 w-5 text-destructive" />
+                  <span>Reset User Password</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6 pt-2">
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onResetPassword)} className="space-y-5">
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          rules={{ required: "Password is required" }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>New Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Enter new password" autoComplete="new-password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="confirmPassword"
+                          rules={{
+                            required: "Please confirm password",
+                            validate: (value) =>
+                              value === form.getValues("password") || "Passwords do not match",
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Confirm new password" autoComplete="new-password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <Button type="submit" disabled={resetLoading} className="w-full mt-2">
+                        {resetLoading ? (
+                          <span className="flex items-center gap-2"><span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full"></span>Updating...</span>
+                        ) : (
+                          <span>Update Password</span>
+                        )}
+                      </Button>
+                      {(resetSuccess || resetError) && (
+                        <div className="flex justify-center mt-2">
+                          {resetSuccess && (
+                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded bg-green-100 text-green-700 text-sm font-medium">
+                              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                              {resetSuccess}
+                            </span>
+                          )}
+                          {resetError && (
+                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-100 text-red-700 text-sm font-medium">
+                              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                              {resetError}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </form>
+                  </Form>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </Card>
         </div>
 
